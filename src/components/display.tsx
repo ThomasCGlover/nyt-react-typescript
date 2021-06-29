@@ -1,9 +1,19 @@
 import React from 'react';
+import NytFetch from './fetch';
 
-const DisplayResults = () => {
+interface Props {
+    imageUrl: string,
+    headline: string,
+
+
+}
+const DisplayResults: React.FunctionComponent<Props> = (props) => {
     return(
     <div>
-        <h1>Results</h1>
+        <br />
+        <br />
+        <h2>{props.headline}</h2>
+        <img src={props.imageUrl} />
     </div>
     )
     }

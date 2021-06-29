@@ -2,25 +2,22 @@ import React, {Component} from 'react';
 import DisplayResults from './display';
 
 type AcceptedProps = {
-    results: {
-        response: {
-            docs: {
-                multimedia: {
-                    url: string;
-                },
-                headline: {
-                    main: string;
-                },
-                keywords: [
-                    {value: string}
-                ]
-            }
-        }
-    },
+    // response: {
+        // docs: [
+            // multimedia: {
+                url: string,
+            // },
+            // headline: {
+                main: string,
+            // },
+            keywords: string[],
+        // ]
+    // },
     searchTerm: string,
     startDate?: string,
     endDate?: string,
     pageNumber: number,
+    
 
 }
 
@@ -29,25 +26,22 @@ export default class NytFetch extends Component<{}, AcceptedProps> {
     constructor(props: AcceptedProps) {
         super(props)
         this.state={
-            results: {
-                response: {
-                    docs: {
-                        multimedia: {
-                            url: ''
-                        },
-                        headline: {
-                            main: ''
-                        },
-                        keywords: [
-                            {value: ''}
-                        ]
-                    }
-                }
-            },
+                // response: {
+                //     docs: [
+                        // multimedia: {
+                            url: '',
+                        // },
+                        // headline: {
+                            main: '',
+                        // },
+                        keywords: [],
+                    //]
+                //},
             searchTerm: '',
             startDate: '',
             endDate: '',
-            pageNumber: 0,
+            pageNumber: 1,
+            
         }
         
     
@@ -57,15 +51,26 @@ export default class NytFetch extends Component<{}, AcceptedProps> {
         e.preventDefault();
         const baseURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';
         const key = 'sOY5tyl2xd17ihXn16giBXmdALwdTlih';
-        const url = `${baseURL}?api-key=${key}&page=${this.state.pageNumber}&q=${this.state.searchTerm}`;
-        fetch(url)
-            .then(function (result) {
+        const fetchUrl = `${baseURL}?api-key=${key}&page=${this.state.pageNumber}&q=${this.state.searchTerm}`;
+        fetch(fetchUrl)
+            .then((result) => {
                 return result.json();
             })
             .then(json =>  {
+
+                // for(let i: number =0; i < json.response.docs.length; i++){
+                // this.setState({
+                //     url: json.response.docs[i].web_url
+                // })}
+                // had a lot of trouble trying to map through with setState and trouble trying to access the json object outside of the fetch to do so there
                 this.setState({
-                    url: json.results.response.docs.multimedia.url
+                    url: json.response.docs[0].multimedia[0].url,
+                    main: json.response.docs[0].headline.main,
+                    keywords: json.response.docs[0].keywords[0],
+
                 })
+                console.log(json)
+                console.log(this.state.main)
             }
             )}
 
@@ -94,9 +99,10 @@ export default class NytFetch extends Component<{}, AcceptedProps> {
         return(
             <>
             <div>
-                <input type="text" onChange={this.handleSearchInput.bind(this)} />
+                <h1>NYT Top Story</h1>
+                <input placeholder="search here" type="text" onChange={this.handleSearchInput.bind(this)} />
                 <button onClick={this.fetchResults.bind(this)}>Submit</button>
-                <DisplayResults />
+                <DisplayResults imageUrl={this.state.url} headline={this.state.main}/>
             </div>
 
             </>
